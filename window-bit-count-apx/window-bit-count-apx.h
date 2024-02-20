@@ -60,7 +60,7 @@ typedef struct {
 uint64_t wnd_bit_count_apx_new(StateApx* self, uint32_t wnd_size, uint32_t k) {
     assert(wnd_size >= 1);
     assert(k >= 1);
-    uint32_t m = 1 + (uint32_t)ceil(log2(((wnd_size - 1)/ k) + 1));
+    uint32_t m = 1 + (uint32_t)ceil(log2(((1.0*wnd_size - 1.0)/ k) + 1.0));
     uint32_t bucket_pool_size = (k+1) * m;
     self->now = 0;
     self->k = k;
