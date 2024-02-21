@@ -7,7 +7,7 @@
 
 #define W 200 // window size
 #define N 1000 // stream length
-#define K 100 // relative error = 1 / K
+#define K 5 // relative error = 1 / K
 
 int main() {
     printf("**** TEST: Bit counting over a sliding window (approximate) *****\n");
@@ -20,20 +20,29 @@ int main() {
     uint32_t last_output_apx = 0;
 
     for (uint32_t wnd_sz=1; wnd_sz<=W; wnd_sz++) {
-        wnd_bit_count_new(&state, W);
+        uint32_t mem_standard = wnd_bit_count_new(&state, W);
         wnd_bit_count_print(&state);
 
         wnd_bit_count_apx_new(&state_apx, W, K);
         wnd_bit_count_apx_print(&state_apx);
 
         for (uint32_t i=1; i<=N; i++) {
-            bool item = true; //i % 2;
+            bool item = i % 2;
+            if (i < 100 ) {
+                item = 1;
+            } else if(i >= 100 && i < 400){
+                item = 0;
+            }
+            else {
+                item = 1;
+            }
+            
             last_output = wnd_bit_count_next(&state, item);
             last_output_apx = wnd_bit_count_apx_next(&state_apx, item);
-            //wnd_bit_count_apx_print(&state_apx);
+            wnd_bit_count_apx_print(&state_apx);
 
-            //printf("last output (precise) = %u\n", last_output);
-            //printf("last output (approximate) = %u\n", last_output_apx);
+            printf("last output (precise) = %u\n", last_output);
+            printf("last output (approximate) = %u\n", last_output_apx);
             //printf("\n");
 
             assert(last_output >= last_output_apx);

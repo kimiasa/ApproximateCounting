@@ -177,16 +177,26 @@ uint32_t wnd_bit_count_apx_next(StateApx* self, bool item) {
 
             self->bucket_pool->available_count++;
 
-            // * needs testing
             if(self->group_head != NULL) {
                 self->group_head->head = self->head;
                 self->group_head->count--;
                 if (self->group_head->count == 0) {
-                    self->group_head = self->group_head->next;
+                    Group* old_group = self->group_head;
+                    self->group_head = old_group->next;
+                    if (self->group_head == NULL) { 
+                        self->group_tail = NULL;
+                    } else {
+                        self->group_head->prev = NULL;
+                        self->group_head->head = self->head;
+                    }
+                    old_group->count = 0;
+                    old_group->next = NULL;
+                    old_group->prev = NULL;
+                    old_group->head = NULL; 
+                    old_group->tail = NULL;
+                    old_group->next = self->group_pool->available;
+                    self->group_pool->available = old_group;
                     self->group_pool->available_count++;
-                    self->group_pool->available = self->group_head;
-                    self->group_head->prev = NULL;
-                    self->group_head->head = self->head;
                     self->group_count--;
                 }
             }
